@@ -1,4 +1,4 @@
-﻿![EveMarketProphet](Docs/Images/emp.png)
+![EveMarketProphet](Docs/Images/EMP.png)
 
 # EveMarketProphet (EMP)
 
@@ -21,18 +21,14 @@ To learn more about SSO and CREST authentication visit the [EVE Online 3rd Party
 1. Create a new app via [EVE Online developer portal](https://developers.eveonline.com/applications)
 2. Fill in the following information:
 
- | 
------------- | -------------
-**Name** | YourName_EMP
-**Description** | EMP 
-**Connection Type** | Authenticated API Access
-**Permissions** | characterLocationRead, remoteClientUI, characterNavigationWrite
-**Callback URL** | /
+ **Name** | **Description** | **Connection Type** | **Permissions** | **Callback URL**
+------------ | ------------- | -------------| -------------| -------------
+YourName_EMP | EMP  | Authenticated API Access | characterLocationRead, remoteClientUI, characterNavigationWrite | /
 
 3. View the newly created app, noting down ```Client ID``` and ```Secret Key```
 4. Open EMP and go to **Settings - Manage API**
 
-![crest](Docs/Images/crest.png)
+![crest](Docs/Images/CREST.png)
 
 5. Copy the values from 3. and click **Open Authentication Link**
 6. Login with your EVE credentials and select the character to use EMP with
@@ -75,12 +71,9 @@ These numbers are heavily dependent on your machine and internet connection.
 
 Currently there are 3 presets:
 
- | 
------------- | -------------
-**Hubs Main** | The Forge, Domain, Heimatar, Sinq-Laison
-**Hubs All** | Hubs Main + Metropolis, Essence, Tash-Murkon, Khanid
-**All** | All regions excluding WH-Space
-
+ * **Hubs Main:** The Forge, Domain, Heimatar, Sinq-Laison
+ * **Hubs All:** Hubs Main + Metropolis, Essence, Tash-Murkon, Khanid
+ * **All:** All regions excluding WH-Space
 
 ## Trip
 
