@@ -1,0 +1,130 @@
+﻿<Window x:Class="EveMarketProphet.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EveMarketProphet.Extensions"
+        xmlns:services="clr-namespace:EveMarketProphet.Services"
+        mc:Ignorable="d"
+        Title="EveMarketProphet (EMP)" Height="768" Width="1024" WindowStartupLocation="CenterScreen" Background="#FF333333" FocusVisualStyle="{DynamicResource OrangeFocus}" MinWidth="1024">
+
+    <Window.Resources>
+ 
+        <Style x:Key="OrangeFocus">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle StrokeThickness="1" Stroke="{StaticResource AccentColor}" StrokeDashArray="1 2" SnapsToDevicePixels="true"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--<ComboBox.Style>
+            <Style>
+                <Style.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Orange" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Orange" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Orange" />
+                </Style.Resources>
+            </Style>
+        </ComboBox.Style>-->
+
+
+        <!--<Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BackgroundColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>-->
+
+        <!--<local:MainViewModel x:Key="DataProvider"/>-->
+        <!--<Style TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex"  Value="0">
+                    <Setter Property="Background" Value="#FF333333" />
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex"  Value="1">
+                    <Setter Property="Background" Value="#FF393939" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <!--<Setter Property="Focusable" Value="False"></Setter>-->
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True" Name="grid">
+        <DockPanel DockPanel.Dock="Top" Height="45" IsEnabled="{Binding IsAvailable}">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                <TextBox x:Name="textBoxCargospace" ToolTip="Cargo space" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="{local:SettingsBinding MaxCargo,StringFormat=N0,TargetNullValue=''}" VerticalAlignment="Center" Width="70" Margin="10,0,0,0" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" BorderThickness="0" BorderBrush="#FF333333"/>
+                <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="3,0,0,0" TextWrapping="Wrap" Text="m³" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+
+                <TextBox x:Name="textBoxISK" HorizontalAlignment="Left" Height="25" Margin="10,0,0,0" TextWrapping="Wrap" Text="{local:SettingsBinding Capital,StringFormat=N0,TargetNullValue=''}" VerticalAlignment="Center" Width="114" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" BorderThickness="0" BorderBrush="#FF333333"/>
+                <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="3,0,0,0" TextWrapping="Wrap" Text="ISK" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                <CheckBox x:Name="checkBox" Content="HighSec" HorizontalAlignment="Left" Margin="15,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource ForegroundColor}" IsChecked="{local:SettingsBinding IsHighSec}" Background="DimGray" BorderBrush="#FF333333"/>
+
+                <Rectangle Margin="15,0,5,0" Height="25" Width="1" Stroke="{DynamicResource ForegroundColor}"/>
+
+                <Button x:Name="fetchDataButton" Content="Fetch Data" Command="{Binding FetchDataCommand}"  HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="75" Height="25"/>
+                <ComboBox x:Name="regionSelect" ItemsSource="{Binding RegionLists}" SelectedValue="{Binding SelectedRegionList}" SelectedIndex="0" DisplayMemberPath="Label"  HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="90" IsReadOnly="True" Height="25"/>
+                <Button x:Name="findRoutesButton" Content="Find Routes" Command="{Binding FindRoutesCommand}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="75" BorderBrush="#FF333333" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" Height="25" FontWeight="Bold"/>
+
+                <Rectangle Margin="15,0,5,0" Height="25" Width="1" Stroke="{DynamicResource ForegroundColor}"/>
+                <Button x:Name="filterButton" Content="Clear Filter" Command="{Binding ClearFiltersCommand}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="75" Height="25" />
+
+                <TextBox Margin="10,0,0,0" Width="30" Height="25" Text="{local:SettingsBinding FilterShowAmount}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" BorderThickness="0"></TextBox>
+
+                <Rectangle Margin="15,0,5,0" Height="25" Width="1" Stroke="{DynamicResource ForegroundColor}"/>
+            </StackPanel>
+
+            <!--<ProgressBar HorizontalAlignment="Stretch" Height="45" VerticalAlignment="Top"  Value="60" Foreground="{DynamicResource AccentColor}" BorderBrush="{x:Null}" Background="{DynamicResource BackgroundColor}" Opacity="0.7" Visibility="Hidden"/>-->
+            <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,0">
+                <Button x:Name="button" Content="&#xE0a5; Donate" FontFamily="Segoe UI Symbol" Height="25" Margin="0,0,0,0" Command="{Binding OpenDonationCommand}" VerticalAlignment="Center" Width="75"/>
+                <Button x:Name="settingsButton" Content="&#xE115; Settings" FontFamily="Segoe UI Symbol" Command="{Binding OpenSettingsCommand}" Margin="10,0,0,0" VerticalAlignment="Center" Width="90" Background="{StaticResource BackgroundColor}" Foreground="{StaticResource ForegroundColor}" BorderBrush="{x:Null}" Height="25"/>
+                <Button x:Name="button_Copy" Content="&#xE11b;" Command="{Binding OpenAboutCommand}" FontFamily="Segoe UI Symbol" Height="25" Width="20"  Margin="10,0,10,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+        </DockPanel>
+
+        <StatusBar DockPanel.Dock="Bottom" Background="#FF515151" >
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <StatusBarItem>
+                <TextBlock Text="Busy" Foreground="{StaticResource ForegroundColor}" Visibility="Hidden"/>
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2">
+                <TextBlock Name="statusUpdate" Text="{Binding StatusBarText}" Foreground="{StaticResource ForegroundColor}"/>
+            </StatusBarItem>
+            <Separator Grid.Column="3" />
+
+            <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <ProgressBar Name="progress"  Minimum="0" Maximum="100" Foreground="{StaticResource AccentColor}" IsIndeterminate="True" Visibility="{Binding ShowProgressBar}" SnapsToDevicePixels="True" BorderBrush="{DynamicResource BackgroundColor}" Background="{DynamicResource ForegroundColor}" BorderThickness="0"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <ListView x:Name="listBoxResults" Grid.IsSharedSizeScope="True" ItemsSource="{Binding TripView, Mode=OneWay}" ItemTemplate="{StaticResource TripTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="#FF333333" BorderThickness="0" Margin="0" Padding="0,0,0,0">
+        </ListView>
+
+    </DockPanel>
+
+</Window>

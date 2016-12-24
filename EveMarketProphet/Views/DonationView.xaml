@@ -1,0 +1,28 @@
+﻿<Window x:Class="EveMarketProphet.Views.DonationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EveMarketProphet"
+        mc:Ignorable="d"
+        Title="EMP - Donation" Width="270" WindowStyle="ToolWindow" ResizeMode="NoResize" Background="#FF333333" SizeToContent="Height">
+    <StackPanel Margin="20">
+        <TextBlock Foreground="{StaticResource AccentColor}" Text="If you find this program useful and you've made some profit, consider donating. It would certainly keep me motivated to work on updates and new features. Cheers!" TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14" TextAlignment="Justify"/>
+
+        <Button Height="25" Content="PayPal ($1 Min.)" Margin="30,20" Click="OnPayPalButton"></Button>
+        <DockPanel Margin="30,0,30,20" >
+            <TextBlock Text="EVE Character:" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}" ></TextBlock>
+            <TextBox Text="Cindril" Height="25" Width="60" IsReadOnly="True" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0" Foreground="{StaticResource ForegroundColor}" Background="#FF515151"></TextBox>
+        </DockPanel>
+
+        <StackPanel Margin="30,20,30,20">
+            <Grid Background="{StaticResource AccentColor}" >
+                <Path Width="150" Height="150" Stretch="None" Fill="#FF333333" x:Name="bitcoinQRCode" HorizontalAlignment="Center" VerticalAlignment="Center"></Path>
+            </Grid>
+            <TextBlock HorizontalAlignment="Right" Text="Bitcoin" Foreground="{StaticResource AccentColor}"></TextBlock>
+
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>

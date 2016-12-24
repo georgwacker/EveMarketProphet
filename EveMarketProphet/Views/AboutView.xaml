@@ -1,0 +1,27 @@
+﻿<Window x:Class="EveMarketProphet.Views.AboutView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="EMP - About" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" Background="#FF333333" SizeToContent="Height">
+    <DockPanel Margin="20">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Image Source="../Resources/EveMarketProphet.ico" VerticalAlignment="Top" Width="64" Height="64"></Image>
+            <StackPanel Margin="20,0,0,0">
+                <TextBlock Text="EveMarketProphet" Foreground="{StaticResource AccentColor}" FontSize="16" FontWeight="Bold"/>
+                <TextBlock Text="{Binding AssemblyVersion, StringFormat=Version: {0}}" Foreground="{StaticResource AccentColor}" Height="25"></TextBlock>
+                <TextBlock Text="{Binding AssemblyInfo.LegalCopyright}" Foreground="{StaticResource AccentColor}" Height="25"></TextBlock>
+                <TextBlock ><Hyperlink Command="{Binding OpenProjectWebsite}" CommandParameter="https://github.com/EveMarketProphet" Foreground="{StaticResource AccentColor}">Github</Hyperlink></TextBlock>
+                <TextBlock Margin="0,20,0,0" Text="Credits:" Foreground="{StaticResource AccentColor}"></TextBlock>
+                <TextBlock Text="■ Title &amp; Logo Concept by NNowheremaNN" Foreground="{StaticResource AccentColor}"></TextBlock>
+                <TextBlock Text="■ Feedback &amp; Ideas by Pallustris" Foreground="{StaticResource AccentColor}"></TextBlock>
+                <TextBlock Text="■ Pulse Icon by Ho Thi Ngoc Trinh (CC)" Foreground="{StaticResource AccentColor}"></TextBlock>
+                <TextBlock Text="■ Type Icons &amp; Game Data by CCP hf " Foreground="{StaticResource AccentColor}"></TextBlock>
+                <TextBlock Text="■ NavBot &amp; EveNav for Inspiration" Foreground="{StaticResource AccentColor}"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+        
+        
+    </DockPanel>
+</Window>
