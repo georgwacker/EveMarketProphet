@@ -170,6 +170,7 @@ This style of opportunistic trading is all about the instant profit and therefor
 * [SQLite](https://sqlite.org/)
 * [RateGate](http://www.jackleitch.net/2010/10/better-rate-limiting-with-dot-net/) 
 * [GitVersion](https://github.com/GitTools/GitVersion)
+* [MSBuildTasks](https://github.com/loresoft/msbuildtasks)
 
 # Credits
 
