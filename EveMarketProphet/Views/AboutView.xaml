@@ -12,7 +12,7 @@
                 <TextBlock Text="EveMarketProphet" Foreground="{StaticResource AccentColor}" FontSize="16" FontWeight="Bold"/>
                 <TextBlock Text="{Binding AssemblyVersion, StringFormat=Version: {0}}" Foreground="{StaticResource AccentColor}" Height="25"></TextBlock>
                 <TextBlock Text="{Binding AssemblyInfo.LegalCopyright}" Foreground="{StaticResource AccentColor}" Height="25"></TextBlock>
-                <TextBlock ><Hyperlink Command="{Binding OpenProjectWebsite}" CommandParameter="https://github.com/EveMarketProphet" Foreground="{StaticResource AccentColor}">Github</Hyperlink></TextBlock>
+                <TextBlock ><Hyperlink Command="{Binding OpenProjectWebsite}" CommandParameter="https://github.com/georgwacker/EveMarketProphet" Foreground="{StaticResource AccentColor}">Github</Hyperlink></TextBlock>
                 <TextBlock Margin="0,20,0,0" Text="Credits:" Foreground="{StaticResource AccentColor}"></TextBlock>
                 <TextBlock Text="■ Title &amp; Logo Concept by NNowheremaNN" Foreground="{StaticResource AccentColor}"></TextBlock>
                 <TextBlock Text="■ Feedback &amp; Ideas by Pallustris" Foreground="{StaticResource AccentColor}"></TextBlock>

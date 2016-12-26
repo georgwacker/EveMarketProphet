@@ -114,6 +114,7 @@ namespace EveMarketProphet.ViewModels
             SetupFakeData();
         }
 
+        [Conditional("DEBUG")]
         private void SetupFakeData()
         {
             var list = new List<Trip>()

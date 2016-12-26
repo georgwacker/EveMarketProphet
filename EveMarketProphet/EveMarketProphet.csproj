@@ -470,6 +470,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\place_fuzzwork_sqlite_here.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -496,7 +501,7 @@
     <PropertyGroup>
       <ReleasePath>bin\Release</ReleasePath>
     </PropertyGroup>
-    <CreateItem Include="$(ReleasePath)\**\*.*" Exclude="$(ReleasePath)\**\*.sqlite;$(ReleasePath)\**\*.pdb">
+    <CreateItem Include="$(ReleasePath)\**\*.*;..\*.txt" Exclude="$(ReleasePath)\**\*.sqlite;$(ReleasePath)\**\*.pdb">
       <Output ItemName="ZipFiles" TaskParameter="Include" />
     </CreateItem>
     <Zip ZipFileName="bin\EveMarketProphet-$(GitVersion_SemVer).zip" WorkingDirectory="$(ReleasePath)" Files="@(ZipFiles)" />

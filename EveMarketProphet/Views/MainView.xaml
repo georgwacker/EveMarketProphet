@@ -79,7 +79,7 @@
                 <Rectangle Margin="15,0,5,0" Height="25" Width="1" Stroke="{DynamicResource ForegroundColor}"/>
                 <Button x:Name="filterButton" Content="Clear Filter" Command="{Binding ClearFiltersCommand}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="75" Height="25" />
 
-                <TextBox Margin="10,0,0,0" Width="30" Height="25" Text="{local:SettingsBinding FilterShowAmount}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" BorderThickness="0"></TextBox>
+                <!--<TextBox Margin="10,0,0,0" Width="30" Height="25" Text="{local:SettingsBinding FilterShowAmount}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="{StaticResource ForegroundColor}" Background="#FF515151" BorderThickness="0"></TextBox>-->
 
                 <Rectangle Margin="15,0,5,0" Height="25" Width="1" Stroke="{DynamicResource ForegroundColor}"/>
             </StackPanel>

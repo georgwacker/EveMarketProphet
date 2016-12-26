@@ -1,0 +1,1 @@
+﻿https://www.fuzzwork.co.uk/dump/sqlite-latest.sqlite.bz2
