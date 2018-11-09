@@ -52,7 +52,6 @@ The general workflow is thus:
 
 Theoretically, you can just use **Find Routes** again after completing a trip, thus calculating all available trade routes based on your new location.
 Due to the short time necessary to download the market data, I recommend to always do a **Fetch Data** first.
-EMP respects the rate limiting of the CREST API, so you don't have to worry about it.
 
 To give you and idea on the numbers, it takes roughly 20 seconds to fetch all market data from the 4 biggest market regions (see [Region Presets](#region-presets)) and 4-8 seconds to calculate the routes (depending on your settings).
 These numbers are heavily dependent on your machine and internet connection.
@@ -105,7 +104,7 @@ This transaction with 2 units weighs in at 20m3. _Hovering over the field will s
 
 The total cost or investment for this trade comes in at 68m ISK, while the overall profit sums up to 15.4m ISK.
 
-_Clicking on the type icon will open the associated market window ingame, when CREST authentication is configured correctly._
+_Clicking on the type icon will open the associated market window ingame, when the authentication is setup._
 
 
 ## Options
@@ -115,7 +114,7 @@ _Clicking on the type icon will open the associated market window ingame, when C
 * **Base Profit:** Earliest threshold in the computation, base profit for the transaction without jumps, takes quantity into account
 * **Filler Profit:** Prevents filling the cargo with miniscule amounts of low volume goods, settings lower than Base Profit have no effect
 * **Profit/Jump:** Base profit per jump between two stations for a trip, not including the route to the start of the trip, filters out trips before expensive route finding
-* **Location:** Fallback ```SolarSystemID``` for the player location, when offline or not using authenticated CREST, basis to route and calculate profitable trips
+* **Location:** Fallback ```SolarSystemID``` for the player location, when offline or not using authentication, basis to route and calculate profitable trips
 * **Accounting:** Level 5 of the Accounting skill lowers the tax rate from 2% to 1% and is important for profit calculations, applies to sell orders
 * **Stations in NullSec:** Removes stations in 0.0 and lower from the dataset, AFAIK there is currently no way to check if a station is NPC-operated. When leaving this option on, you may not be able to dock there. **[Applies to next Fetch Data]**
 * **Illegal Goods:** Removes illegal goods from the dataset, does not take regional differences into account **[Applies to next Fetch Data]**
