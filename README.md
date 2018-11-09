@@ -4,38 +4,28 @@
 
 Opportunistic trading tool for EVE Online. 
 Calculates lucrative trade routes between market regions based on player location, cargo space, capital and configurable thresholds.
-Uses live market data via CREST API. Windows WPF application.
+Uses live market data via ESI API. Windows WPF application.
 
 # Setup
 
 1. Unzip EMP
 2. Unzip ```sqlite-latest.sqlite``` from [Fuzzwork SDE](https://www.fuzzwork.co.uk/dump/sqlite-latest.sqlite.bz2) to the ```Data\``` directory
-3. Setup [CREST Authentication](#crest-authentication) **[recommended]**
+3. Setup [Authentication](#authentication) **[recommended]**
 
-## CREST Authentication
+## Authentication
 
-Reading the current player location, setting waypoints and opening market windows requires authentication via Single Sign-On (SSO).
-Setting it up takes less than 5 minutes and enhances the usability of EMP greatly.
-To learn more about SSO and CREST authentication visit the [EVE Online 3rd Party Developer Documentation](https://eveonline-third-party-documentation.readthedocs.io/en/latest/sso/index.html).
+Reading the current player location, setting waypoints and opening market windows requires authentication via OAuth2.
 
-1. Create a new app via [EVE Online developer portal](https://developers.eveonline.com/applications)
-2. Fill in the following information:
+1. Open EMP and go to **Settings**
+2. Click **Authenticate (via Browser)**
+3. A window/tab opens in your default browser to log into your EVE account
+4. Select the character to authenticate (you can repeat this later to select a different one)
+5. EMP will show a success message and the selected character name
 
- **Name** | **Description** | **Connection Type** | **Permissions** | **Callback URL**
------------- | ------------- | -------------| -------------| -------------
-YourName_EMP | EMP  | Authenticated API Access | characterLocationRead, remoteClientUI, characterNavigationWrite | /
-
-3. View the newly created app, noting down ```Client ID``` and ```Secret Key```
-4. Open EMP and go to **Settings - Manage API**
-
-![crest](Docs/Images/CREST.png)
-
-5. Copy the values from 3. and click **Open Authentication Link**
-6. Login with your EVE credentials and select the character to use EMP with
-7. Copy the response URL (the page you landed on after login) from your browser into **Paste URL** (make sure it is complete)
-8. Click **Get Authentication Token**
-9. If successful, a **Refresh Token** will be created
-10. Hit **Save**
+Notes:
+- EMP listens on port 8989 for the authentication flow, once it has aquired the token, the HTTP server shuts down
+- If the authentication flow gets stuck, you can press the 'X' button to shut down the HTTP server and try again
+- Users of version 1.0 who have setup their own app via the EVE developer portal can delete it
 
 
 # User Guide
@@ -145,23 +135,14 @@ Fly safe. Trade safe.
 
 # FAQ
 
-## Q: Is there any way around setting up my own app via the dev portal?
-No. Sharing my personal ```Client ID``` / ```Secret Key``` would enable people to use the API in a potential malicous way and get my account banned.
-
-## Q: Why are the ```Secret Key``` and ```Refresh Token``` not encrypted?
-It wouldn't add much security, for the amount of extra overhead and key management. You have full control over the entire authentication process.
-You can always change or add apps via the dev portal and create a new key. An attacker would need access to your system to get ahold of your Authentication.settings file and even then would be limited by the permission scope (location, waypoints, ui).
-
-More information in the documentation for [EVE SSO Non-Browser Apps](https://eveonline-third-party-documentation.readthedocs.io/en/latest/sso/nonbrowserapps.html).
-
-In short, the authentication flow and security measures differ greatly between a web-based application serving many users and a desktop application with a personal key.
+## Q: Is the old setup via dev portal still required?
+No, EMP uses the new OAuth2 authentication flow for native apps. 
 
 ## Q: What about the Broker Fee?
 This style of opportunistic trading is all about the instant profit and therefor you will rarely setup long-term sell orders. Especially when travelling to far out systems, where you can't update the market orders easily.
 
 # Frameworks
 
-* [EveLib.NET [_EveLib.Auth_]](https://github.com/ezet/evelib)
 * [QuickGraph](https://github.com/YaccConstructor/QuickGraph) 
 * [Entity Framework Core](https://github.com/aspnet/EntityFramework)
 * [ZXing.Net](https://zxingnet.codeplex.com/)
@@ -171,6 +152,7 @@ This style of opportunistic trading is all about the instant profit and therefor
 * [RateGate](http://www.jackleitch.net/2010/10/better-rate-limiting-with-dot-net/) 
 * [GitVersion](https://github.com/GitTools/GitVersion)
 * [MSBuildTasks](https://github.com/loresoft/msbuildtasks)
+* [Flurl](https://flurl.io/)
 
 # Credits
 
