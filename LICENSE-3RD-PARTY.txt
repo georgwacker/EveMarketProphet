@@ -182,6 +182,7 @@ CodeContracts, Copyright (c) Microsoft Corporation
 Newtonsoft Json, Copyright (c) 2007 James Newton-King
 AsyncEx, Copyright (c) 2014 StephenCleary
 GitVersion, Copyright (c) 2013 NServiceBus Ltd
+Flurl, Copyright (c) 2018 Todd Menier
 -------------------------------------------------------------------
 
 The MIT License (MIT)
