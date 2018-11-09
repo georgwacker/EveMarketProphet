@@ -10,6 +10,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using EveMarketProphet.Properties;
 using EveMarketProphet.Utils;
+using Flurl;
+using Flurl.Http;
 
 namespace EveMarketProphet.Services
 {
@@ -24,7 +26,7 @@ namespace EveMarketProphet.Services
 
         public async Task FetchOrders(List<int> regions)
         {
-            OrdersBag = new ConcurrentBag<List<MarketOrder>>(); //new List<MarketOrder>(3000000);
+            OrdersBag = new ConcurrentBag<List<MarketOrder>>(); 
 
             var handler = new HttpClientHandler
             {
@@ -35,34 +37,51 @@ namespace EveMarketProphet.Services
 
             foreach (var regionId in regions)
             {
-                pageRequests.Enqueue($"https://crest-tq.eveonline.com/market/{regionId}/orders/all/?page=1");
-            }
+                var orderURL = $"https://esi.evetech.net/latest/markets/{regionId}/orders/";
+                var head = await orderURL.HeadAsync();
 
-            // EVE crest allows 150 requests per second
-            // ignoring the burst allowance of 400 for now
+                var pages_str = head.Headers.GetValues("x-pages").FirstOrDefault();
+                var pages = Int32.Parse(pages_str);
+
+                for (int i = 1; i <= pages; i++)
+                {
+                    pageRequests.Enqueue(orderURL.SetQueryParam("page", i));
+                }
+            }
 
             await Task.Run(() =>
             {
-                using (var client = new HttpClient(handler))
+                Parallel.ForEach(pageRequests, new ParallelOptions() { MaxDegreeOfParallelism = 20 }, (request) =>
+                {
+                    var result = request.GetJsonAsync<List<MarketOrder>>().Result;
+                    if(result != null)
+                    {
+                        OrdersBag.Add(result);
+                    }
+                });
+
+                /*using (var client = new HttpClient(handler))
                 using (var rateGate = new RateGate(150, TimeSpan.FromSeconds(1)))
                 {
                     ParallelUtils.ParallelWhileNotEmpty(pageRequests, (item, adder) =>
                     {
-                        rateGate.WaitToProceed();
+                        //rateGate.WaitToProceed();
 
                         var result = client.GetAsync(item).Result;
+
                         var json = result.Content.ReadAsStringAsync().Result;
-                        var response = JsonConvert.DeserializeObject<MarketOrderCollection>(json);
+                        var response = JsonConvert.DeserializeObject<List<MarketOrder>>(json);
 
                         if (response != null)
                         {
-                            if (response.next != null) adder(response.next.href);
-                            OrdersBag.Add(response.Orders);
+                            //if (response.next != null) adder(response.next.href);
+                                OrdersBag.Add(response);
+                            
                             //Orders.AddRange(response.Orders);
                             //Trace.WriteLine("Download: " + item);
                         }
                     });
-                }
+                }*/
             }).ContinueWith((prevTask) =>
             {
                 var orders = new List<MarketOrder>(3000000);
@@ -70,6 +89,8 @@ namespace EveMarketProphet.Services
                 {
                     orders.AddRange(list);
                 }
+                OrdersBag = null;
+                //var orders = OrdersBag.ToList();
 
                 var groupedByStation = orders.ToLookup(x => x.StationId);
 
@@ -80,13 +101,13 @@ namespace EveMarketProphet.Services
 
                     foreach (var order in stationGroup)
                     {
-                        order.SolarSystemId = station.solarSystemID;
+                        //order.SolarSystemId = station.solarSystemID;
                         order.RegionId = station.regionID;
                         order.StationSecurity = station.security; //SecurityUtils.RoundSecurity(station.security);
                     }
                 }
 
-                orders.RemoveAll(x => x.SolarSystemId == 0);
+                orders.RemoveAll(x => x.SystemId == 0);
 
                 if (Settings.Default.IgnoreNullSecStations)
                     orders.RemoveAll(x => x.StationSecurity <= 0.0);
@@ -98,6 +119,7 @@ namespace EveMarketProphet.Services
                 }
 
                 OrdersByType = orders.ToLookup(o => o.TypeId); // create subsets for each item type
+                orders = null;
             });
 
             

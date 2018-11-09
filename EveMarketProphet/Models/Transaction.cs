@@ -13,8 +13,8 @@ namespace EveMarketProphet.Models
 
         public long StartStationId => SellOrder.StationId; 
         public long EndStationId => BuyOrder.StationId;
-        public int StartSystemId => SellOrder.SolarSystemId;
-        public int EndSystemId => BuyOrder.SolarSystemId;
+        public int StartSystemId => SellOrder.SystemId;
+        public int EndSystemId => BuyOrder.SystemId;
         public int TypeId => SellOrder.TypeId;
         public string TypeName => SellOrder.TypeName;
         public double TypeVolume => SellOrder.TypeVolume;

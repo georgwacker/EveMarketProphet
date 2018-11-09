@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using EveMarketProphet.Models;
@@ -14,10 +15,11 @@ namespace EveMarketProphet.Services
             if (Market.Instance.OrdersByType == null) return null;
             if (Market.Instance.OrdersByType.Count == 0) return null;
 
-            var profitableTx = new List<Transaction>();
+            var profitableTx = new ConcurrentBag<Transaction>();
 
             // for each item type
             Parallel.ForEach(Market.Instance.OrdersByType, (orderGroup, state) =>
+            //foreach(var orderGroup in Market.Instance.OrdersByType)
             {
                 var orders = orderGroup.ToList();
 
@@ -102,6 +104,7 @@ namespace EveMarketProphet.Services
                         foreach (var sellOrder in sellOrders)
                         {
                             if (tracker[sellOrder.OrderId] <= 0) continue;
+                            if (sellOrder.Price <= 0) continue;
 
                             var quantity = Math.Min(tracker[sellOrder.OrderId], quantityToFill);
                             var partialTx = new Transaction(sellOrder, buyOrder, quantity);

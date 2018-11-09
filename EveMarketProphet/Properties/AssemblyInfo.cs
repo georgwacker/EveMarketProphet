@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("EveMarketProphet")]
-[assembly: AssemblyCopyright("Copyright © 2016 Georg Wacker")]
+[assembly: AssemblyCopyright("Copyright © 2018 Georg Wacker")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

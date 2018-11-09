@@ -1,56 +1,34 @@
-﻿using eZet.EveLib.EveAuthModule;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using EveMarketProphet.Properties;
+using Flurl;
+using Flurl.Http;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.Windows;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace EveMarketProphet.Services
 {
     public class Auth
     {
         public static Auth Instance { get; } = new Auth();
+        public static RNGCryptoServiceProvider Rand = new RNGCryptoServiceProvider();
+        public static SHA256CryptoServiceProvider Sha = new SHA256CryptoServiceProvider();
 
-        private EveAuth EveAuthInstance { get; } = new EveAuth();
         private AuthResponse Current { get; set; }
         private DateTime ExpiresAt { get; set; }
+
+        public const string ClientID = "96a101c951eb47239caf8cc1fca0a9e7";
+        public const string CallbackURL = "http://localhost:8989/callback/";
+
+        private string CurrentChallengeBase { get; set; }
+        private string CurrentStateSecret { get; set; }
 
         private Auth()
         {
             TryAuthenticationRefresh();
-        }
-
-        private string GetEncodedKey()
-        {
-            if (string.IsNullOrEmpty(Authentication.Default.ClientId) ||
-                string.IsNullOrEmpty(Authentication.Default.ClientSecret)) return null;
-
-            return EveAuth.Encode(Authentication.Default.ClientId, Authentication.Default.ClientSecret);
-        }
-
-        public void TryAuthentication(string authCode)
-        {
-            if (string.IsNullOrEmpty(authCode)) return;
-
-            var encodedKey = GetEncodedKey();
-            if (string.IsNullOrEmpty(encodedKey)) return;
-
-            try
-            {
-                var response = EveAuthInstance.AuthenticateAsync(encodedKey, authCode).Result;
-                Current = response;
-                ExpiresAt = DateTime.Now.AddSeconds(response.ExpiresIn);
-                Authentication.Default.RefreshToken = response.RefreshToken;
-                Settings.Default.PrivateCrest = true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Authentication unsuccessfull");
-                Console.WriteLine(e.Message);
-            }
-            
         }
 
         private string TryAuthenticationRefresh()
@@ -59,17 +37,29 @@ namespace EveMarketProphet.Services
             {
                 if (string.IsNullOrEmpty(Authentication.Default.RefreshToken)) return null;
 
-                var encodedKey = GetEncodedKey();
-                if (string.IsNullOrEmpty(encodedKey)) return null;
+                var req = "https://login.eveonline.com/v2/oauth/token";
+                var result = req.WithHeaders(new
+                {
+                    Content_Type = "application/x-www-form-urlencoded",
+                    Host = "login.eveonline.com"
+                })
+                .PostUrlEncodedAsync(new
+                {
+                    grant_type = "refresh_token",
+                    refresh_token = Authentication.Default.RefreshToken,
+                    client_id = ClientID
+                }).ReceiveJson<AuthResponse>().Result;
 
-                var response = EveAuthInstance.RefreshAsync(encodedKey, Authentication.Default.RefreshToken).Result;
-                Current = response;
-                ExpiresAt = DateTime.Now.AddSeconds(response.ExpiresIn);
-                return response.AccessToken;
+                Current = result;
+                ExpiresAt = DateTime.Now.AddSeconds(result.ExpiresIn);
+                Authentication.Default.RefreshToken = result.RefreshToken;
+                Authentication.Default.Save();
+
+                return result.AccessToken;
             }
             catch (Exception e)
             {
-                Console.WriteLine("Authentication refresh unsuccessfull");
+                Console.WriteLine("Authentication refresh unsuccessful");
                 Console.WriteLine(e.Message);
             }
 
@@ -83,132 +73,140 @@ namespace EveMarketProphet.Services
             return DateTime.Now < ExpiresAt ? Current.AccessToken : TryAuthenticationRefresh();
         }
 
-        public string CreateAuthLink(string clientId)
+        public string GenerateRandomString(int length)
         {
-            if (string.IsNullOrEmpty(clientId)) return null;
-            return EveAuthInstance.CreateAuthLink(clientId, "/", "default", "characterLocationRead remoteClientUI characterNavigationWrite");
+            var buf = new byte[length];
+            Rand.GetBytes(buf);
+            return Base64UrlEncoder.Encode(buf);
+        }
+
+        public void RequestToken(string authCode, string state)
+        {
+            var req = "https://login.eveonline.com/v2/oauth/token";
+            var result = req.WithHeaders(new
+            {
+                Content_Type = "application/x-www-form-urlencoded",
+                Host = "login.eveonline.com"
+            })
+            .PostUrlEncodedAsync(new
+            {
+                grant_type = "authorization_code",
+                code = authCode,
+                client_id = ClientID,
+                code_verifier = CurrentChallengeBase
+            }).ReceiveJson<AuthResponse>().Result;
+
+            Current = result;
+            ExpiresAt = DateTime.Now.AddSeconds(result.ExpiresIn);
+            Authentication.Default.RefreshToken = result.RefreshToken;
+            Authentication.Default.CharName = GetCharacterName();
+            Authentication.Default.Save();
+
+            MessageBox.Show("Authentication successful", "EMP - ESI Authentication", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public string CreateAuthLink()
+        {
+            CurrentChallengeBase = GenerateRandomString(32);
+            var hash = Sha.ComputeHash(Encoding.UTF8.GetBytes(CurrentChallengeBase));
+            var challenge = Base64UrlEncoder.Encode(hash);
+            CurrentStateSecret = GenerateRandomString(8);
+
+            var auth = "https://login.eveonline.com/v2/oauth/authorize/"
+                        .SetQueryParams(new
+                        {
+                            response_type = "code",
+                            redirect_uri = CallbackURL,
+                            client_id = ClientID,
+                            scope = "esi-location.read_location.v1 esi-ui.open_window.v1 esi-ui.write_waypoint.v1",
+                            code_challenge = challenge,
+                            code_challenge_method = "S256",
+                            state = CurrentStateSecret
+                        });
+
+            return auth;
+        }
+
+        public string GetCharacterName()
+        {
+            var token = GetAccessToken();
+            if (string.IsNullOrEmpty(token)) return null;
+
+            var url = "https://esi.tech.ccp.is/verify/";
+            dynamic info = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
+            return info.CharacterName;
+        }
+
+        public long GetCharacterID()
+        {
+            var token = GetAccessToken();
+            if (string.IsNullOrEmpty(token)) return 0;
+
+            var url = "https://esi.tech.ccp.is/verify/";
+            dynamic info = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
+            return info.CharacterID;
         }
 
         public int GetLocation()
         {
-            if (Current == null) return 0;
             var token = GetAccessToken();
+            if (string.IsNullOrEmpty(token)) return 0;
 
-            if (!string.IsNullOrEmpty(token))
+            var character_id = GetCharacterID();
+            if (character_id == 0) return 0;
+
+            var url = $"https://esi.evetech.net/latest/characters/{character_id}/location/";
+
+            dynamic location = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
+            var solarSystemId = 0;
+
+            try
             {
-                var resp = EveAuthInstance.VerifyAsync(token).Result;
-                if (resp == null) return 0;
-
-                var charId = resp.CharacterId;
-
-                var c = new HttpClient();
-                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = c.GetAsync($"https://crest-tq.eveonline.com/characters/{charId}/location/");
-                var json = response.Result.Content.ReadAsStringAsync().Result;
-                var obj = JObject.Parse(json);
-
-                // Offline, return Jita 4/4
-                if (!obj.HasValues) return 0;
-
-                var solarSystemId = (int)obj.SelectToken("solarSystem.id");
-
-                return solarSystemId;
+                solarSystemId = (int)location.solar_system_id;
+            }
+            catch (RuntimeBinderException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
-
-            return 0;
+            return solarSystemId;
         }
 
         public async void OpenMarketWindow(int typeId)
         {
-            if (Current == null) return;
             var token = GetAccessToken();
-
             if (string.IsNullOrEmpty(token)) return;
 
-            var charId = EveAuthInstance.VerifyAsync(token).Result.CharacterId;
-
-            var payload = new OpenWindow
-            {
-                type = new Type
-                {
-                    href = String.Format("https://crest-tq.eveonline.com/inventory/types/{0}/", typeId),
-                    id = typeId
-                }
-            };
-
-            var stringPayload = JsonConvert.SerializeObject(payload);
-            var postData = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                await httpClient.PostAsync($"https://crest-tq.eveonline.com/characters/{charId}/ui/openwindow/marketdetails/", postData);
-
-                // There is no response, if the action is successful the market details window will open.
-            }
-
+            var url = $"https://esi.evetech.net/latest/ui/openwindow/marketdetails/";
+            await url.WithOAuthBearerToken(token).SetQueryParam("type_id", typeId).PostAsync(null);
         }
 
         public async void SetWaypoints(int systemId, bool clearOtherWaypoints)
         {
-            if (Current == null) return;
             var token = GetAccessToken();
-
             if (string.IsNullOrEmpty(token)) return;
 
-            var charId = EveAuthInstance.VerifyAsync(token).Result.CharacterId;
-
-            var payload = new Waypoint
-            {
-                ClearOtherWaypoints = clearOtherWaypoints,
-                First = false,
-                SolarSystem = new Type
-                {
-                    href = String.Format("https://crest-tq.eveonline.com/solarsystems/{0}/", systemId),
-                    id = systemId
-                }
-            };
-
-            var stringPayload = JsonConvert.SerializeObject(payload);
-            var postData = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                await httpClient.PostAsync($"https://crest-tq.eveonline.com/characters/{charId}/ui/autopilot/waypoints/", postData);
-
-                // There is no response, if the action is successful the market details window will open.
-            }
+            var url = $"https://esi.evetech.net/latest/ui/autopilot/waypoint/";
+            await url.WithOAuthBearerToken(token).SetQueryParams(new {
+                add_to_beginning = false,
+                clear_other_waypoints = clearOtherWaypoints,
+                destination_id = systemId
+            }).PostAsync(null);
         }
 
-        private class OpenWindow
+        private class AuthResponse
         {
-            [JsonProperty("type")]
-            public Type type { get; set; }
-        }
+            [JsonProperty("access_token")]
+            public string AccessToken { get; set; }
 
-        private class Type
-        {
-            [JsonProperty("href")]
-            public string href { get; set; }
+            [JsonProperty("expires_in")]
+            public int ExpiresIn { get; set; }
 
-            [JsonProperty("id")]
-            public int id { get; set; }
-        }
+            [JsonProperty("token_type")]
+            public string TokenType { get; set; }
 
-        private class Waypoint
-        {
-            [JsonProperty("clearOtherWaypoints")]
-            public bool ClearOtherWaypoints { get; set; }
-
-            [JsonProperty("first")]
-            public bool First { get; set; }
-
-            [JsonProperty("solarSystem")]
-            public Type SolarSystem { get; set; }
+            [JsonProperty("refresh_token")]
+            public string RefreshToken { get; set; }
         }
     }
 }

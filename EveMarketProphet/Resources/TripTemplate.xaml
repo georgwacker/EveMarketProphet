@@ -17,7 +17,7 @@
                     <DockPanel>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
-                                <Button Content="From" Width="50" BorderThickness="1" Command="{Binding DataContext.SetWaypointsCommand, ElementName=listBoxResults}" CommandParameter="{Binding Transactions[0].SellOrder.SolarSystemId}" Background="#FF333333" Foreground="{StaticResource AccentColor}"></Button>
+                                <Button Content="From" Width="50" BorderThickness="1" Command="{Binding DataContext.SetWaypointsCommand, ElementName=listBoxResults}" CommandParameter="{Binding Transactions[0].SellOrder.SystemId}" Background="#FF333333" Foreground="{StaticResource AccentColor}"></Button>
                                 <TextBlock x:Name="SellStationName" Text="{Binding Path=Transactions[0].SellOrder.StationName, StringFormat={}{0}}" Foreground="{StaticResource ForegroundColor}" Margin="10,0,0,0"/>
                                 <TextBlock Text="{Binding Path=Transactions[0].SellOrder.StationSecurity,StringFormat={}{0:N1}}" Margin="5,0,0,0" Foreground="{Binding Path=Transactions[0].SellOrder.StationSecurity, Converter={StaticResource SecConverter}}">
                                     <TextBlock.Style>
@@ -33,7 +33,7 @@
                                 </TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
-                                <Button Content="To" Width="50" BorderThickness="1" Command="{Binding DataContext.SetWaypointsCommand, ElementName=listBoxResults}" CommandParameter="{Binding Transactions[0].BuyOrder.SolarSystemId}" Background="#FF333333" Foreground="{StaticResource AccentColor}"></Button>
+                                <Button Content="To" Width="50" BorderThickness="1" Command="{Binding DataContext.SetWaypointsCommand, ElementName=listBoxResults}" CommandParameter="{Binding Transactions[0].BuyOrder.SystemId}" Background="#FF333333" Foreground="{StaticResource AccentColor}"></Button>
                                 <TextBlock x:Name="BuyStationName" Text="{Binding Path=Transactions[0].BuyOrder.StationName, StringFormat={}{0}}" Grid.Row="1" Foreground="{StaticResource ForegroundColor}" Margin="10,0,0,0"></TextBlock>
                                 <TextBlock Text="{Binding Path=Transactions[0].BuyOrder.StationSecurity,StringFormat={}{0:N1}}" Margin="5,0,0,0" Foreground="{Binding Path=Transactions[0].BuyOrder.StationSecurity, Converter={StaticResource SecConverter}}">
                                     <TextBlock.Style>
@@ -89,10 +89,10 @@
                     </DockPanel>
                     <DockPanel DockPanel.Dock="Right" HorizontalAlignment="Right">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding Path=ProfitPerJump, StringFormat=&#xE149; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Column="4" FontWeight="Bold" Foreground="{StaticResource AccentColor}"></TextBlock>
-                            <TextBlock Text="{Binding Path=Profit, StringFormat=&#x1f4b0; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Column="4" Grid.Row="1" Foreground="{StaticResource ForegroundColor}"></TextBlock>
-                            <TextBlock Text="{Binding Path=Cost, StringFormat=&#xE13C; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Row="2" Grid.Column="4" Foreground="{StaticResource ForegroundColor}"></TextBlock>
-                            <TextBlock Text="{Binding Path=Weight, StringFormat=&#x1f3ec; {0:N2} m3}" FontFamily="Segoe UI Symbol" Grid.Row="2" Grid.Column="4" Foreground="{StaticResource ForegroundColor}"></TextBlock>
+                            <TextBlock ToolTip="Profit/Jump" Text="{Binding Path=ProfitPerJump, StringFormat=&#xE149; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Column="4" FontWeight="Bold" Foreground="{StaticResource AccentColor}"></TextBlock>
+                            <TextBlock ToolTip="Profit" Text="{Binding Path=Profit, StringFormat=&#x1f4b0; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Column="4" Grid.Row="1" Foreground="{StaticResource ForegroundColor}"></TextBlock>
+                            <TextBlock ToolTip="Cost" Text="{Binding Path=Cost, StringFormat=&#xE13C; {0:N0} ISK}" FontFamily="Segoe UI Symbol" Grid.Row="2" Grid.Column="4" Foreground="{StaticResource ForegroundColor}"></TextBlock>
+                            <TextBlock ToolTip="Weight" Text="{Binding Path=Weight, StringFormat=&#x1f3ec; {0:N2} m3}" FontFamily="Segoe UI Symbol" Grid.Row="2" Grid.Column="4" Foreground="{StaticResource ForegroundColor}"></TextBlock>
                         </StackPanel>
                     </DockPanel>
 

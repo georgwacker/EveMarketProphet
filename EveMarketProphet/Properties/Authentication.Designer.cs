@@ -12,7 +12,7 @@ namespace EveMarketProphet.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
     public sealed partial class Authentication : global::System.Configuration.ApplicationSettingsBase {
         
         private static Authentication defaultInstance = ((Authentication)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Authentication())));
@@ -26,36 +26,24 @@ namespace EveMarketProphet.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ClientId {
-            get {
-                return ((string)(this["ClientId"]));
-            }
-            set {
-                this["ClientId"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ClientSecret {
-            get {
-                return ((string)(this["ClientSecret"]));
-            }
-            set {
-                this["ClientSecret"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string RefreshToken {
             get {
                 return ((string)(this["RefreshToken"]));
             }
             set {
                 this["RefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CharName {
+            get {
+                return ((string)(this["CharName"]));
+            }
+            set {
+                this["CharName"] = value;
             }
         }
     }

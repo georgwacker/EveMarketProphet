@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using EveMarketProphet.Properties;
+using EveMarketProphet.Services;
 
 namespace EveMarketProphet.Views
 {
@@ -35,6 +36,16 @@ namespace EveMarketProphet.Views
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             view.ShowDialog();
+        }
+
+        private void AuthButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Listener.Instance.Async();
+        }
+
+        private void StopAuthButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Listener.Instance.Stop();
         }
     }
 }

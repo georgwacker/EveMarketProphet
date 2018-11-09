@@ -22,6 +22,7 @@ namespace EveMarketProphet.ViewModels
         public ICommand OpenLinkCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
         public ICommand ResetCommand { get; private set; }
+        public ICommand AutoCommand { get; private set; }
 
         public ManageApiViewModel()
         {
@@ -29,6 +30,7 @@ namespace EveMarketProphet.ViewModels
             OpenLinkCommand = new DelegateCommand(OnOpenLink);
 			SaveCommand = new DelegateCommand<Window>(OnSave);
 			ResetCommand = new DelegateCommand(OnReset);
+            AutoCommand = new DelegateCommand(OnAuto);
         }
 
         private void OnReset()
@@ -44,10 +46,10 @@ namespace EveMarketProphet.ViewModels
 
         private void OnOpenLink()
         {
-            var link = Auth.Instance.CreateAuthLink(Properties.Authentication.Default.ClientId);
-            if (string.IsNullOrEmpty(link)) return;
+            //var link = Auth.Instance.CreateAuthLink(Properties.Authentication.Default.ClientId);
+            //if (string.IsNullOrEmpty(link)) return;
 
-            Process.Start(link);
+            //Process.Start(link);
         }
 
         private void OnGetToken()
@@ -56,7 +58,12 @@ namespace EveMarketProphet.ViewModels
 
             var pastedUri = new Uri(PastedUrl);
             var accessToken = HttpUtility.ParseQueryString(pastedUri.Query).Get("code");
-            Auth.Instance.TryAuthentication(accessToken);
+            //Auth.Instance.TryAuthentication(accessToken);
+        }
+
+        private void OnAuto()
+        {
+            //Listener.Create();
         }
     }
 }
