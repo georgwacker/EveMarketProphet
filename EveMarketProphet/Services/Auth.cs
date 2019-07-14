@@ -22,7 +22,7 @@ namespace EveMarketProphet.Services
 
         public const string ClientID = "96a101c951eb47239caf8cc1fca0a9e7";
         public const string CallbackURL = "http://localhost:8989/callback/";
-
+        public const string VerifyString = "https://esi.evetech.net/verify/";
         private string CurrentChallengeBase { get; set; }
         private string CurrentStateSecret { get; set; }
 
@@ -127,14 +127,29 @@ namespace EveMarketProphet.Services
             return auth;
         }
 
+        private dynamic GetUserInfoByToken(string token)
+        {
+            try
+            {
+                var url = VerifyString;
+                dynamic info = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
+                return info;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message, "Error");
+            }
+            return null;
+        }
+
         public string GetCharacterName()
         {
             var token = GetAccessToken();
             if (string.IsNullOrEmpty(token)) return null;
 
-            var url = "https://esi.tech.ccp.is/verify/";
-            dynamic info = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
-            return info.CharacterName;
+            dynamic info = GetUserInfoByToken(token);
+
+            return info?.CharacterName;
         }
 
         public long GetCharacterID()
@@ -142,9 +157,8 @@ namespace EveMarketProphet.Services
             var token = GetAccessToken();
             if (string.IsNullOrEmpty(token)) return 0;
 
-            var url = "https://esi.tech.ccp.is/verify/";
-            dynamic info = url.WithOAuthBearerToken(token).GetJsonAsync().Result;
-            return info.CharacterID;
+            dynamic info = GetUserInfoByToken(token);
+            return info?.CharacterID;
         }
 
         public int GetLocation()
